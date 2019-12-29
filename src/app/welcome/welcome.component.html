@@ -2,11 +2,15 @@
     <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
-            <div *ngIf="image" id="buttonWrapper">
-                <input type="button" id="plus" value="+" 
+            <div *ngIf="!imgFail && image" id="buttonWrapper">
+                <input type="button" id="plus" value="➕" 
                         title="Enlarge Image" (click)="scaleImage(1)">
-                <input type="button" id="minus" value="-" 
-                        title="Shrink Image" (click)="scaleImage(0)"> 
+                <input type="button" id="minus" value="➖" 
+                        title="Shrink Image" (click)="scaleImage(0)">
+                <input *ngIf="imgDeminsions.left && imgDeminsions.top"
+                        title="Save Image" type="button" (click)="saveImage('file')" value="💽">
+                <input *ngIf="imgDeminsions.left && imgDeminsions.top"
+                        title="Clear Image" type="button" (click)="resetImage()" value="💨">                    
                 <input *ngIf="imgSelection.deminsions.left && imgSelection.deminsions.top"
                         title="Crop Image" type="button" (click)="cropImage()" value="📸">
             </div>
@@ -30,12 +34,11 @@
                  alt="Altered image">
                  <br/>
 
-            <button (click)="saveImage('img')">
+            <button (click)="saveImage('edit')">
                 Save
             </button>
 
         </div>
-
 
     </div>
     <br/>
@@ -43,11 +46,24 @@
         <div>
 
             <label for="userFile">
-                Select an image to crop or scale :)
+                Select an image file to crop or scale :)
                 <br/>
                 <input type="file" id="userFile" (change)="readImageFromUser($event)"
                     [ngModel]="imgFile" accept="image/*">
             </label>
+            <br/>
+
+            <label for="webUrl">
+                Or the URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
+                <br/>
+                <input type="text" placeholder="Enter a URL of an image" [(ngModel)]="webUrl" name="webUrl">
+            </label>
+
+            <button type="button" (click)="getImageFromService()">Get Image</button>
+
+            <p *ngIf="webUrl && imgFail">
+                Failed to load image since bad URL or CORS is not supported
+            </p>
             </div>
     </div>
 </div>

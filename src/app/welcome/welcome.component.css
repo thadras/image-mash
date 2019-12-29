@@ -36,11 +36,17 @@
     z-index: 1;
 
 }
+.button-bar {
+    z-index: 3;
+}
 
 #buttonWrapper {
     width: 30px;
     top: 2px;
     right: 2px;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    
 
 }
 input[type =
