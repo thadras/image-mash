@@ -1,0 +1,53 @@
+<div class="body">
+    <div class="workspace-wrapper"> 
+     
+        <div  class="workspace controls">
+            <div *ngIf="image" id="buttonWrapper">
+                <input type="button" id="plus" value="+" 
+                        title="Enlarge Image" (click)="scaleImage(1)">
+                <input type="button" id="minus" value="-" 
+                        title="Shrink Image" (click)="scaleImage(0)"> 
+                <input *ngIf="imgSelection.deminsions.left && imgSelection.deminsions.top"
+                        title="Crop Image" type="button" (click)="cropImage()" value="📸">
+            </div>
+        </div>
+        
+        <div class="workspace" (mousemove)="moving($event)" (mouseout)="endDrag($event)"
+            (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)"
+            [style.height.px]="imgDeminsions.top" [style.width.px]="imgDeminsions.left">
+            <canvas [height]="imgDeminsions.top" [width]="imgDeminsions.left"
+                    id="canvasImage">
+            </canvas>
+            <canvas [height]="imgDeminsions.top" [width]="imgDeminsions.left"
+                    id="canvasRectangle">
+
+            </canvas>
+            <canvas id="scaledCanvas" [width]="scaleDeminsions.left" [height]="scaleDeminsions.top">
+            </canvas>
+        </div>
+        <div *ngIf="imageToShow" class="workspace">
+            <img [src]="imageToShow"
+                 alt="Altered image">
+                 <br/>
+
+            <button (click)="saveImage('img')">
+                Save
+            </button>
+
+        </div>
+
+
+    </div>
+    <br/>
+    <div class="button-bar">
+        <div>
+
+            <label for="userFile">
+                Select an image to crop or scale :)
+                <br/>
+                <input type="file" id="userFile" (change)="readImageFromUser($event)"
+                    [ngModel]="imgFile" accept="image/*">
+            </label>
+            </div>
+    </div>
+</div>
