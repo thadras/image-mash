@@ -209,7 +209,6 @@ export class WelcomeComponent implements OnInit {
     this.image.src = reader.result as string;
     this.image.addEventListener('load', () => {
 
-      console.log(reader.type);
       console.groupCollapsed('loaded the image type %s  with w: %d by h: %d',this.imgMime, this.image.width, this.image.height);
       this.isImageLoading = true;
       this.imgDeminsions.top = this.scaleDeminsions.top = this.image.height;
@@ -320,9 +319,11 @@ export class WelcomeComponent implements OnInit {
     element.type = this.imgMime;
     element.setAttribute('download', (source === 'file') ? 'loadedImage.' + ext: 'editedImage.'+ext);
     document.body.appendChild(element);
-    console.log(element);
-    console.log('set file ext %s and name %s, header %s', ext, element.download, element.href.substr(0, 16));
+    if (element.href.length > 2**11) {
+      this.imgFail = true;
+    }	
+    console.log('set file name %s, URI length %d', element.download, element.href.length);
     element.click();
-    //document.body.removeChild(element);
+    document.body.removeChild(element);
   }
 }

@@ -1,8 +1,14 @@
 <div class="body">
+    <p *ngIf="webUrl && imgFail">
+         Failed to load image since bad URL or CORS is not supported
+    </p>
+    <p *ngIf="imgFail">
+    	When Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
+    </p>
     <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
-            <div *ngIf="!imgFail && image" id="buttonWrapper">
+            <div *ngIf="image" id="buttonWrapper">
                 <input type="button" id="plus" value="➕" 
                         title="Enlarge Image" (click)="scaleImage(1)">
                 <input type="button" id="minus" value="➖" 
@@ -60,10 +66,6 @@
             </label>
 
             <button type="button" (click)="getImageFromService()">Get Image</button>
-
-            <p *ngIf="webUrl && imgFail">
-                Failed to load image since bad URL or CORS is not supported
-            </p>
             </div>
     </div>
 </div>
