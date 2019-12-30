@@ -1,10 +1,15 @@
 <div class="body">
-    <p *ngIf="webUrl && imgFail">
+    <p *ngIf="webUrl !== '' && imgFail">
          Failed to load image since bad URL or CORS is not supported
     </p>
-    <p *ngIf="imgFail">
+    <p *ngIf="imgFail && 
+              ((imageToShow && imageToShow.length && imageToShow.length/(1024*1024 > 2)) 
+              || (imgUrl && imgUrl.length && imgUrl.length/(1024*1024 > 2)))">
     	When Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
+        The loaded image URI size is {{imgUrl.length/(1024*1024)}} MB
+        The edited image URI size is {{imageToShow.length /(1024*1024)}} MB
     </p>
+
     <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
@@ -13,26 +18,26 @@
                         title="Enlarge Image" (click)="scaleImage(1)">
                 <input type="button" id="minus" value="➖" 
                         title="Shrink Image" (click)="scaleImage(0)">
-                <input *ngIf="imgDeminsions.left && imgDeminsions.top"
+                <input *ngIf="imgDeminsions.x && imgDeminsions.y"
                         title="Save Image" type="button" (click)="saveImage('file')" value="💽">
-                <input *ngIf="imgDeminsions.left && imgDeminsions.top"
+                <input *ngIf="imgDeminsions.x && imgDeminsions.y"
                         title="Clear Image" type="button" (click)="resetImage()" value="💨">                    
-                <input *ngIf="imgSelection.deminsions.left && imgSelection.deminsions.top"
+                <input *ngIf="imgSelection.deminsions.x && imgSelection.deminsions.y"
                         title="Crop Image" type="button" (click)="cropImage()" value="📸">
             </div>
         </div>
         
         <div class="workspace" (mousemove)="moving($event)" (mouseout)="endDrag($event)"
             (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)"
-            [style.height.px]="imgDeminsions.top" [style.width.px]="imgDeminsions.left">
-            <canvas [height]="imgDeminsions.top" [width]="imgDeminsions.left"
+            [style.height.px]="imgDeminsions.y" [style.width.px]="imgDeminsions.x">
+            <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
                     id="canvasImage">
             </canvas>
-            <canvas [height]="imgDeminsions.top" [width]="imgDeminsions.left"
+            <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
                     id="canvasRectangle">
 
             </canvas>
-            <canvas id="scaledCanvas" [width]="scaleDeminsions.left" [height]="scaleDeminsions.top">
+            <canvas id="scaledCanvas" [width]="scaleDeminsions.x" [height]="scaleDeminsions.y">
             </canvas>
         </div>
         <div *ngIf="imageToShow" class="workspace">

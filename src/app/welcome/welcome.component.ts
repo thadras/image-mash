@@ -1,15 +1,15 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
 import { LoadImageService } from './../load-image.service';
 
 //#region interfaces
 interface Position {
-  top: number;
-  left: number;
+  y: number;
+  x: number;
 
 }
 
 interface Rectangle {
-  orgin: Position;
+  upperLeft: Position;
   deminsions: Position;
 }
 //#endregion
@@ -23,19 +23,20 @@ export class WelcomeComponent implements OnInit {
 
   // #region Members
   imgUrl: string;
-  webUrl: string;
+  @Input()
+  webUrl: string = 'assets/img/hills.jpg';
   imgFile: any;
   imgMime = '';
   imgFail = false;
   receivedClick = false;
-  imgDeminsions: Position = { top: 0, left: 0 };
-  scaleDeminsions: Position = { top: 0, left: 0 };
+  imgDeminsions: Position = { y: 0, x: 0 };
+  scaleDeminsions: Position = { y: 0, x: 0 };
 
-  startPosition: Position = { top: 0, left: 0 };
-  stopPosition: Position = { top: 0, left: 0 };
+  startPosition: Position = { y: 0, x: 0 };
+  stopPosition: Position = { y: 0, x: 0 };
   imgSelection: Rectangle = {
-    orgin: { top: 0, left: 0 },
-    deminsions: { top: 0, left: 0 }
+    upperLeft: { y: 0, x: 0 },
+    deminsions: { y: 0, x: 0 }
   };
 
   imgCanvas: HTMLCanvasElement;
@@ -53,6 +54,7 @@ export class WelcomeComponent implements OnInit {
               private imageService: LoadImageService) {  }
 
   ngOnInit() {
+    this.getImageFromService();
   }
 
   //#region Image selection and reseting
@@ -62,8 +64,9 @@ export class WelcomeComponent implements OnInit {
     this.receivedClick = true;
     const rect = this.imgCanvas.getBoundingClientRect();
 
-    this.startPosition.left = this.stopPosition.left = event.clientX - rect.left;
-    this.startPosition.top = this.stopPosition.top = event.clientY - rect.top;
+    // ParseInt calls to ensure we start at a pixel to avoid rectangle in cropped image
+    this.startPosition.x = this.stopPosition.x = parseInt(event.clientX.toString()) - parseInt(rect.left.toString());
+    this.startPosition.y = this.stopPosition.y = parseInt(event.clientY.toString()) - parseInt(rect.top.toString());
 
     if (!this.rectCanvas) {
       this.rectCanvas = document.getElementById('canvasImage') as HTMLCanvasElement;
@@ -72,7 +75,7 @@ export class WelcomeComponent implements OnInit {
     this.resetCanvas();
 
     console.groupCollapsed('started dragging from %d x %d',
-         this.startPosition.left, this.startPosition.top);
+         this.startPosition.x, this.startPosition.y);
     const scroll: any[] = this.scrollOffset();
     console.groupEnd();
 
@@ -83,34 +86,58 @@ export class WelcomeComponent implements OnInit {
     if (!this.receivedClick) { return; }
 
     const rect = this.imgCanvas.getBoundingClientRect();
-    this.stopPosition.top = event.pageY - rect.top;
-    this.stopPosition.left = event.pageX - rect.left;
+    // ParseInt calls to ensure we start at a pixel to avoid rectangle in cropped image
+    this.stopPosition.y = parseInt(event.pageY.toString()) - parseInt(rect.top.toString());
+    this.stopPosition.x = parseInt(event.pageX.toString()) - parseInt(rect.left.toString());
     this.resetCanvas();
     this.rectContext.beginPath();
-
-    const x = (this.startPosition.left > this.stopPosition.left) ? this.stopPosition.left : this.startPosition.left;
-    const y = (this.startPosition.top > this.stopPosition.top) ?  this.stopPosition.top : this.startPosition.top ;
-    const w = (this.stopPosition.left > this.startPosition.left) ? this.stopPosition.left - this.startPosition.left
-      : this.startPosition.left - this.stopPosition.left;
-    const h = (this.stopPosition.top > this.startPosition.top) ? this.stopPosition.top - this.startPosition.top
-      : this.startPosition.top - this.stopPosition.top;
+    const moveUp = this.startPosition.y > this.stopPosition.y;
+    const moveForward = this.startPosition.x > this.stopPosition.x;
+    const x = (this.startPosition.x > this.stopPosition.x) ? this.stopPosition.x : this.startPosition.x;
+    const y = (this.startPosition.y > this.stopPosition.y) ?  this.stopPosition.y : this.startPosition.y ;
+    const w = (this.stopPosition.x > this.startPosition.x) ? this.stopPosition.x - this.startPosition.x
+      : this.startPosition.x - this.stopPosition.x;
+    const h = (this.stopPosition.y > this.startPosition.y) ? this.stopPosition.y - this.startPosition.y
+      : this.startPosition.y - this.stopPosition.y;
     const scroll = this.scrollOffset();
     // console.log('drag-rect from O(%d, %d) to C(%d, %d) rect (%d, %d, %d, %d)', this.startPosition.left,
     //  this.startPosition.top, this.stopPosition.left, this.stopPosition.top, x, y, w, h);
 
-    this.imgSelection.orgin.left = x;
-    this.imgSelection.orgin.top =  y;
-    this.imgSelection.deminsions.left = (!scroll.length) ? w : w - scroll[0];
-    this.imgSelection.deminsions.top = (!scroll.length) ? h : h - scroll[1];
-    this.rectContext.strokeRect(x, y, this.imgSelection.deminsions.left, this.imgSelection.deminsions.top);
+    this.imgSelection.upperLeft.x = x;
+    this.imgSelection.upperLeft.y =  y;
+    this.imgSelection.deminsions.x = (!scroll.length) ? w : w - scroll[0];
+    this.imgSelection.deminsions.y = (!scroll.length) ? h : h - scroll[1];
+    this.rectContext.strokeRect(x, y, this.imgSelection.deminsions.x, this.imgSelection.deminsions.y);
 
   }
 
+  direction(): string {
+    const ascending = this.startPosition.y > this.stopPosition.y;
+    const backwards = this.startPosition.x > this.stopPosition.x;
+  
+      if (backwards && ascending) {
+        return 'Bottom-Right to Top-Left';
+      }
+
+      if (backwards && !ascending) {
+        return 'Top-Right to Bottom-Left';
+      }
+
+      if (!backwards && !ascending) {
+        return 'Top-Left to Bottom-Right';
+      }
+
+      if (!backwards && ascending) {
+        return 'Bottom-Left to Top-Right';
+      }
+  }
   endDrag(event) {
     if (this.receivedClick) {
       this.receivedClick = false;
-      console.groupCollapsed('finished dragging at %d x %d',
-        this.stopPosition.left, this.stopPosition.top);
+     console.groupCollapsed('Moved from %s', this.direction());
+      
+      console.log('finished dragging at %d x %d',
+        this.stopPosition.x, this.stopPosition.y);
       console.log(this.imgSelection);
       this.scrollOffset();
       console.groupEnd();
@@ -129,9 +156,10 @@ export class WelcomeComponent implements OnInit {
   resetImage() {
     this.resetCanvas();
     this.image = null;
-    this.imgDeminsions.top = this.imgDeminsions.left = 0;
+    this.imgDeminsions.y = this.imgDeminsions.x = 0;
     this.imgContext = null;
     this.imgFail = false;
+    this.imgUrl = ''
   }
 
   resetCanvas() {
@@ -142,7 +170,7 @@ export class WelcomeComponent implements OnInit {
       this.imageToShow = null;
     }
 
-    this.imgSelection.deminsions.left = this.imgSelection.deminsions.top = 0;
+    this.imgSelection.deminsions.x = this.imgSelection.deminsions.y = 0;
     this.scaleValue = 1;
 
     if (this.imgContext) {
@@ -202,12 +230,12 @@ export class WelcomeComponent implements OnInit {
 
       console.groupCollapsed('loaded the image type %s  with w: %d by h: %d', this.imgMime, this.image.width, this.image.height);
       this.isImageLoading = true;
-      this.imgDeminsions.top = this.scaleDeminsions.top = this.image.height;
-      this.imgDeminsions.left = this.scaleDeminsions.left = this.image.width;
+      this.imgDeminsions.y = this.scaleDeminsions.y = this.image.height;
+      this.imgDeminsions.x = this.scaleDeminsions.x = this.image.width;
       this.imgCanvas = document.getElementById('canvasImage') as HTMLCanvasElement;
       this.changeDetector.detectChanges();
       this.imgContext = this.imgCanvas.getContext('2d');
-      console.log('canvas is now %d x %d', this.imgDeminsions.top, this.imgDeminsions.left);
+      console.log('canvas is now %d x %d', this.imgDeminsions.y, this.imgDeminsions.x);
       this.imgContext.drawImage(this.image, 0, 0);
       console.groupEnd();
     });
@@ -247,32 +275,35 @@ export class WelcomeComponent implements OnInit {
   cropImage() {
     const canvasCrop = document.createElement('canvas');
     // Hard-coded offsets are to remove the rectangle from the cropped image
-    canvasCrop.width = this.imgSelection.deminsions.left - 3;
-    canvasCrop.height = this.imgSelection.deminsions.top - 2;
+    canvasCrop.width = this.imgSelection.deminsions.x - 2;
+    canvasCrop.height = this.imgSelection.deminsions.y - 2;
 
-    const imageData = this.imgContext.getImageData(this.imgSelection.orgin.left + 2, this.imgSelection.orgin.top + 1,
-      this.imgSelection.deminsions.left - 2, this.imgSelection.deminsions.top - 2);
-    console.log('crop from %s %s to size %s %s', this.imgSelection.orgin.left + 2, this.imgSelection.orgin.top + 1,
-        this.imgSelection.deminsions.left - 2, this.imgSelection.deminsions.top - 2);
+    const imageData = this.imgContext.getImageData(this.imgSelection.upperLeft.x + 1, this.imgSelection.upperLeft.y + 1,
+      this.imgSelection.deminsions.x - 1, this.imgSelection.deminsions.y - 1);
+    console.log('crop from %s %s to size %s %s', this.imgSelection.upperLeft.x + 1, this.imgSelection.upperLeft.y + 1,
+        this.imgSelection.deminsions.x - 1, this.imgSelection.deminsions.y - 1);
     const contextCrop = canvasCrop.getContext('2d');
     contextCrop.fillStyle = 'white';
     contextCrop.fill();
     contextCrop.putImageData(imageData, 0, 0);
 
     this.imageToShow = canvasCrop.toDataURL(this.imgMime);
+    console.log('Cropped image size is %d', this.imageToShow.length)
   }
 
   scaleImage(scale) {
     const canvasScale = document.getElementById('scaledCanvas') as HTMLCanvasElement;
     const contextScale = canvasScale.getContext('2d');
+
+    // Use of Math.floor to keep from image having black trim for partial pixel
     if (scale) {
       this.scaleValue /= 0.8;
-      this.scaleDeminsions.left = canvasScale.width = Math.ceil(this.imgDeminsions.left * this.scaleValue);
-      this.scaleDeminsions.top  = canvasScale.height = Math.ceil(this.imgDeminsions.top * this.scaleValue);
+      this.scaleDeminsions.x = canvasScale.width = Math.floor(this.imgDeminsions.x * this.scaleValue);
+      this.scaleDeminsions.y  = canvasScale.height = Math.floor(this.imgDeminsions.y * this.scaleValue);
     } else {
       this.scaleValue *= 0.8;
-      this.scaleDeminsions.left = canvasScale.width = Math.ceil(this.imgDeminsions.left * this.scaleValue);
-      this.scaleDeminsions.top  = canvasScale.height = Math.ceil(this.imgDeminsions.top * this.scaleValue);
+      this.scaleDeminsions.x = canvasScale.width = Math.floor(this.imgDeminsions.x * this.scaleValue);
+      this.scaleDeminsions.y  = canvasScale.height = Math.floor(this.imgDeminsions.y * this.scaleValue);
     }
 
     // clear canvas

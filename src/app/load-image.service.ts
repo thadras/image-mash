@@ -14,4 +14,5 @@ export class LoadImageService {
     return this.httpClient.get(imageUrl, { responseType: 'blob' });
   }
 
+
 }
