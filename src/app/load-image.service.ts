@@ -11,8 +11,6 @@ export class LoadImageService {
   constructor(private httpClient: HttpClient) { }
 
   getImage(imageUrl: string): Observable<Blob> {
-    //imageUrl='assets/img/hills.jpg';
-    //console.log('short circuit to: %s', imageUrl)
     return this.httpClient.get(imageUrl, { responseType: 'blob' });
   }
 
