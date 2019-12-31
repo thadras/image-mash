@@ -11,6 +11,8 @@ All image manipulation is done on a HTML5 Canvas that is rendered in an Image, a
 * Remote host supports cross-origin requests
 * URL loads a file with mime-type image 
 
+Try the app out on [StackBlitz](https://gqairmxnx.github.stackblitz.io).
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.19.
 
 
