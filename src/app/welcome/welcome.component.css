@@ -34,7 +34,10 @@
 
 #canvasRectangle {
     z-index: 1;
-
+    display: none;
+}
+#scaledCanvas, #userFile{
+    display: none;
 }
 .button-bar {
     z-index: 3;
@@ -49,11 +52,17 @@
     
 
 }
+.editedImage {
+position: -webkit-sticky; /* Safari */
+position: sticky;
+
+
+}
 input[type =
-"button"] {
-    padding: 5px;
-    width: 30px;
-    margin: 0px 0px 2px 0px;
+"button"] .fileButton{
+    padding: 6px;
+    width: 34px;
+    margin: 0px 0px 8px 0px;
     column-count: 3;
     column-gap: 20px;
 }

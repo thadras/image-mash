@@ -1,22 +1,20 @@
 <div class="body">
     <p *ngIf="webUrl !== '' && imgFail">
-         Failed to load image since bad URL or CORS is not supported
+         Failed to load image {{webUrl}}since bad URL or CORS is not supported
     </p>
-    <p *ngIf="imgFail && 
-              ((imageToShow && imageToShow.length && imageToShow.length/(1024*1024 > 2)) 
-              || (imgUrl && imgUrl.length && imgUrl.length/(1024*1024 > 2)))">
+    <ul *ngIf="largeImage()">
     	When Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
-        The loaded image URI size is {{imgUrl.length/(1024*1024)}} MB
-        The edited image URI size is {{imageToShow.length /(1024*1024)}} MB
-    </p>
+        <li *ngIf="imgUrl && imgUrl.length">The loaded image URI size is {{imgUrl.length/(1024*1024) | number}} MB</li>
+        <li *ngIf="imageToShow && imageToShow.length">The edited image URI size is {{imageToShow.length /(1024*1024)| number}} MB</li>
+    </ul>
 
-    <div class="workspace-wrapper"> 
+    <div class="workspace-wrapper" (scroll)="onScroll($event)"> 
      
         <div  class="workspace controls">
-            <div *ngIf="image" id="buttonWrapper">
-                <input type="button" id="plus" value="➕" 
+            <div id="buttonWrapper">
+                <input *ngIf="image" type="button" id="plus" value="➕" 
                         title="Enlarge Image" (click)="scaleImage(1)">
-                <input type="button" id="minus" value="➖" 
+                <input *ngIf="image" type="button" id="minus" value="➖" 
                         title="Shrink Image" (click)="scaleImage(0)">
                 <input *ngIf="imgDeminsions.x && imgDeminsions.y"
                         title="Save Image" type="button" (click)="saveImage('file')" value="💽">
@@ -24,30 +22,27 @@
                         title="Clear Image" type="button" (click)="resetImage()" value="💨">                    
                 <input *ngIf="imgSelection.deminsions.x && imgSelection.deminsions.y"
                         title="Crop Image" type="button" (click)="cropImage()" value="📸">
+		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
             </div>
         </div>
         
-        <div class="workspace" (mousemove)="moving($event)" (mouseout)="endDrag($event)"
-            (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)"
-            [style.height.px]="imgDeminsions.y" [style.width.px]="imgDeminsions.x">
+        <div class="workspace controls" (mousemove)="moving($event)" (mouseout)="endDrag($event)"
+	     (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)">
             <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
                     id="canvasImage">
             </canvas>
             <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
                     id="canvasRectangle">
-
             </canvas>
             <canvas id="scaledCanvas" [width]="scaleDeminsions.x" [height]="scaleDeminsions.y">
             </canvas>
         </div>
         <div *ngIf="imageToShow" class="workspace">
-            <img [src]="imageToShow"
+            <img [src]="imageToShow" class="editedImage"
                  alt="Altered image">
                  <br/>
 
-            <button (click)="saveImage('edit')">
-                Save
-            </button>
+            <button (click)="saveImage('edit')">💽</button>
 
         </div>
 
@@ -57,15 +52,15 @@
         <div>
 
             <label for="userFile">
-                Select an image file to crop or scale :)
-                <br/>
+		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
+                &nbsp;Select an image file to resize (➖/➕) or crop (by making selection & 📸) then save (💽) or clear (💨) :)
                 <input type="file" id="userFile" (change)="readImageFromUser($event)"
-                    [ngModel]="imgFile" accept="image/*">
+                    [ngModel]="imgFile" accept="image/*" #file>
             </label>
             <br/>
 
             <label for="webUrl">
-                Or the URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
+                Or use URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
                 <br/>
                 <input type="text" placeholder="Enter a URL of an image" [(ngModel)]="webUrl" name="webUrl">
             </label>
