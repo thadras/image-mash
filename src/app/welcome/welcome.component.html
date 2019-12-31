@@ -8,7 +8,7 @@
         <li *ngIf="imageToShow && imageToShow.length">The edited image URI size is {{imageToShow.length /(1024*1024)| number}} MB</li>
     </ul>
 
-    <div class="workspace-wrapper" (scroll)="onScroll($event)"> 
+    <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
             <div  *ngIf="image" class="floatWrapper">

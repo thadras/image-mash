@@ -23,10 +23,10 @@ export class WelcomeComponent implements OnInit {
   // #region Members
   imgUrl: string;
   @Input()
-  webUrl: string = 'assets/img/hills.jpg';
+  webUrl = 'assets/img/hills.jpg';
   imgFile: any;
   imgMime = '';
-  imgFail: boolean = false;
+  imgFail = false;
   receivedClick = false;
   imgDeminsions: Position = { x: 0, y: 0 };
   scaleDeminsions: Position = { x: 0, y: 0 };
@@ -63,8 +63,8 @@ export class WelcomeComponent implements OnInit {
     const rect = this.imgCanvas.getBoundingClientRect();
 
     // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
-    this.startPosition.x = this.stopPosition.x = parseInt(event.clientX.toString()) - parseInt(rect.left.toString());
-    this.startPosition.y = this.stopPosition.y = parseInt(event.clientY.toString()) - parseInt(rect.top.toString());
+    this.startPosition.x = this.stopPosition.x = parseInt(event.clientX.toString(), 10) - parseInt(rect.left.toString(), 10);
+    this.startPosition.y = this.stopPosition.y = parseInt(event.clientY.toString(), 10) - parseInt(rect.top.toString(), 10);
 
     if (!this.rectCanvas) {
       this.rectCanvas = document.getElementById('canvasImage') as HTMLCanvasElement;
@@ -86,55 +86,56 @@ export class WelcomeComponent implements OnInit {
     const scroll = this.scrollOffset();
     const rect = this.imgCanvas.getBoundingClientRect();
     // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
-    this.stopPosition.x = parseInt(event.clientX.toString()) - parseInt(rect.left.toString());
-    this.stopPosition.y = parseInt(event.clientY.toString()) - parseInt(rect.top.toString());
-    
+    this.stopPosition.x = parseInt(event.clientX.toString(), 10) - parseInt(rect.left.toString(), 10);
+    this.stopPosition.y = parseInt(event.clientY.toString(), 10) - parseInt(rect.top.toString(), 10);
+
     this.resetCanvas();
     this.rectContext.beginPath();
-    
-     const dir = this.direction();
 
-     console.log('Dragging from Start %s to Stop %s Ev[%d, %d], Canvas(%d, %d), Crop %s, Scroll %s',
-       JSON.stringify(this.startPosition), JSON.stringify(this.stopPosition), dir, 
-       event.clientX, event.clientY, rect.left, rect.top,
-       JSON.stringify(this.imgSelection),
-       JSON.stringify(scroll));
-     this.rectContext.strokeStyle = "lime"; 
-     this.rectContext.strokeRect( 
-     	this.imgSelection.upperLeft.x, this.imgSelection.upperLeft.y,
-     	this.imgSelection.deminsions.x, this.imgSelection.deminsions.y);
+    const dir = this.direction();
+
+    console.log('Dragging from Start %s to Stop %s Ev[%d, %d], Canvas(%d, %d), Crop %s, Scroll %s',
+                JSON.stringify(this.startPosition), JSON.stringify(this.stopPosition), dir,
+                event.clientX, event.clientY, rect.left, rect.top,
+                JSON.stringify(this.imgSelection),
+                JSON.stringify(scroll));
+    this.rectContext.strokeStyle = 'lime';
+    this.rectContext.strokeRect(
+    this.imgSelection.upperLeft.x, this.imgSelection.upperLeft.y,
+    this.imgSelection.deminsions.x, this.imgSelection.deminsions.y);
 
   }
 
   direction(): string {
-    if ( this.startPosition.x == this.stopPosition.x || 
-  	this.startPosition.y == this.stopPosition.y) {
-	return 'Line';
-	}
+    if ( this.startPosition.x === this.stopPosition.x ||
+        this.startPosition.y === this.stopPosition.y) {
+      return 'Line';
+    }
+
     const scroll = this.scrollOffset();
     const descending = this.startPosition.y > this.stopPosition.y;
     const backwards = this.startPosition.x > this.stopPosition.x;
     this.imgSelection.deminsions.x = Math.abs(this.stopPosition.x - this.startPosition.x);
-    this.imgSelection.deminsions.y = Math.abs(this.stopPosition.y - this.startPosition.y); 
-      if (backwards && descending) {
+    this.imgSelection.deminsions.y = Math.abs(this.stopPosition.y - this.startPosition.y);
+    if (backwards && descending) {
         this.imgSelection.upperLeft.x = this.stopPosition.x;
         this.imgSelection.upperLeft.y = this.stopPosition.y;
         return 'Bottom-Right to Top-Left';
       }
 
-      if (backwards && !descending) {
+    if (backwards && !descending) {
         this.imgSelection.upperLeft.x = this.stopPosition.x;
         this.imgSelection.upperLeft.y = this.startPosition.y;
         return 'Top-Right to Bottom-Left';
       }
 
-      if (!backwards && !descending) {
+    if (!backwards && !descending) {
         this.imgSelection.upperLeft.x = this.startPosition.x;
         this.imgSelection.upperLeft.y = this.startPosition.y;
         return 'Top-Left to Bottom-Right';
       }
 
-      if (!backwards && descending) {
+    if (!backwards && descending) {
         this.imgSelection.upperLeft.x = this.startPosition.x;
         this.imgSelection.upperLeft.y = this.stopPosition.y;
         return 'Bottom-Left to Top-Right';
@@ -144,7 +145,7 @@ export class WelcomeComponent implements OnInit {
   endDrag(event) {
     if (this.receivedClick) {
       this.receivedClick = false;
-      // Close console output group of selection dragging 
+      // Close console output group of selection dragging
       console.groupEnd();
       const dir = this.direction();
       console.log('Finished selection at %s with direction %s', JSON.stringify(this.stopPosition), dir);
@@ -166,8 +167,8 @@ export class WelcomeComponent implements OnInit {
     this.imgDeminsions.y = this.imgDeminsions.x = 0;
     this.imgContext = null;
     this.imgFail = false;
-    this.webUrl = ''
-  
+    this.webUrl = '';
+
     if (this.imageToShow) {
       this.imageToShow = null;
     }
@@ -272,9 +273,9 @@ export class WelcomeComponent implements OnInit {
   }
 
   largeImage() {
-    return this.imgFail && 
-           ((this.imageToShow &&  this.imageToShow.length && this.imageToShow.length/(1024*1024) > 2) ||
-            (this.imgUrl &&  this.imgUrl.length && this.imgUrl.length/(1024*1024) > 2));
+    return this.imgFail &&
+           ((this.imageToShow &&  this.imageToShow.length && this.imageToShow.length / (1024 * 1024) > 2) ||
+            (this.imgUrl &&  this.imgUrl.length && this.imgUrl.length / (1024 * 1024) > 2));
   }
 //#endregion
 
