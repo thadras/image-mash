@@ -62,7 +62,7 @@ export class WelcomeComponent implements OnInit {
     this.receivedClick = true;
     const rect = this.imgCanvas.getBoundingClientRect();
 
-    // ParseInt calls to ensure we start at a pixel to avoid rectangle in cropped image
+    // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
     this.startPosition.x = this.stopPosition.x = parseInt(event.clientX.toString()) - parseInt(rect.left.toString());
     this.startPosition.y = this.stopPosition.y = parseInt(event.clientY.toString()) - parseInt(rect.top.toString());
 
@@ -85,18 +85,16 @@ export class WelcomeComponent implements OnInit {
 
     const scroll = this.scrollOffset();
     const rect = this.imgCanvas.getBoundingClientRect();
-    // ParseInt calls to ensure we start at a pixel to avoid rectangle in cropped image
+    // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
     this.stopPosition.x = parseInt(event.clientX.toString()) - parseInt(rect.left.toString());
     this.stopPosition.y = parseInt(event.clientY.toString()) - parseInt(rect.top.toString());
-    console.log('dragged to  %s Scroll %s Ev c[%d, %d] p[%d, %d] Canvas %s',
-      JSON.stringify(this.stopPosition), JSON.stringify(scroll), event.clientX, event.clientY,event.pageX, event.pageY, JSON.stringify(rect));
-
+    
     this.resetCanvas();
     this.rectContext.beginPath();
     
      const dir = this.direction();
 
-     console.log('Drag Start%s to Stop %s Ev[%d, %d], Canvas(%d, %d), Crop %s, Scroll %s',
+     console.log('Dragging from Start %s to Stop %s Ev[%d, %d], Canvas(%d, %d), Crop %s, Scroll %s',
        JSON.stringify(this.startPosition), JSON.stringify(this.stopPosition), dir, 
        event.clientX, event.clientY, rect.left, rect.top,
        JSON.stringify(this.imgSelection),
@@ -149,8 +147,7 @@ export class WelcomeComponent implements OnInit {
       // Close console output group of selection dragging 
       console.groupEnd();
       const dir = this.direction();
-      console.log('Finished selection at %s with direction %s',
-        JSON.stringify(this.stopPosition), dir);
+      console.log('Finished selection at %s with direction %s', JSON.stringify(this.stopPosition), dir);
       this.changeDetector.detectChanges();
     }
   }
@@ -200,7 +197,6 @@ export class WelcomeComponent implements OnInit {
       this.imgFail = true;
       return;
     }
-    console.log('createImageFromBlob type is %s', image.type);
     this.imgMime = image.type;
     reader.addEventListener('load', this.doFileRead.bind(this, reader), false);
 
@@ -210,7 +206,6 @@ export class WelcomeComponent implements OnInit {
   }
 
   readImageFromUser(imageFile) {
-    console.groupCollapsed('User has selected an image!', imageFile);
 
     this.resetImage();  // Clear current image
     if (this.imgContext) {
@@ -219,14 +214,12 @@ export class WelcomeComponent implements OnInit {
     // Check for the various File API support.
     if (window['File'] && window['FileReader'] && window['FileList'] && window['Blob']) {
 
-        console.log('selected %d files', imageFile.target.files.length);
+        console.log('You selected the file %d', imageFile.target.files[0]);
         const reader = new FileReader();
         reader.addEventListener('load', this.doFileRead.bind(this, reader), false);
-        console.log(imageFile.target.files[0]);
         reader.readAsDataURL(imageFile.target.files[0]);
         this.imgMime = imageFile.target.files[0].type;
 
-        console.groupEnd();
 
     } else {
         alert('Your browser is too old to support necessary HTML5 APIs');
@@ -239,25 +232,21 @@ export class WelcomeComponent implements OnInit {
     this.image.src = reader.result as string;
     this.image.addEventListener('load', () => {
 
-      console.groupCollapsed('loaded the image type %s  with w: %d by h: %d', this.imgMime, this.image.width, this.image.height);
+      console.log('loaded the image type %s  with w: %d by h: %d', this.imgMime, this.image.width, this.image.height);
       this.isImageLoading = true;
       this.imgDeminsions.x = this.scaleDeminsions.x = this.image.width;
       this.imgDeminsions.y = this.scaleDeminsions.y = this.image.height;
       this.imgCanvas = document.getElementById('canvasImage') as HTMLCanvasElement;
       this.changeDetector.detectChanges();
       this.imgContext = this.imgCanvas.getContext('2d');
-      console.log('canvas is now %d x %d', this.imgDeminsions.x, this.imgDeminsions.y);
       this.imgContext.drawImage(this.image, 0, 0);
-      console.groupEnd();
     });
     this.imgUrl = reader.result as string;
-    console.log('read the file its length is %s', this.imgUrl.length);
   }
 
   getImageFromService() {
       if (!this.webUrl) {
         console.error('No image has been selected!');
-        console.log(this.webUrl);
         return;
       }
 

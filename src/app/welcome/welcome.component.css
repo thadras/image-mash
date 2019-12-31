@@ -43,7 +43,7 @@
     z-index: 3;
 }
 
-#buttonWrapper {
+.floatWrapper {
     width: 30px;
     top: 2px;
     right: 2px;

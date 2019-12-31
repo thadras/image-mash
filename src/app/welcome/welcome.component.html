@@ -11,10 +11,10 @@
     <div class="workspace-wrapper" (scroll)="onScroll($event)"> 
      
         <div  class="workspace controls">
-            <div id="buttonWrapper">
-                <input *ngIf="image" type="button" id="plus" value="➕" 
+            <div  *ngIf="image" class="floatWrapper">
+                <input type="button" id="plus" value="➕" 
                         title="Enlarge Image" (click)="scaleImage(1)">
-                <input *ngIf="image" type="button" id="minus" value="➖" 
+                <input type="button" id="minus" value="➖" 
                         title="Shrink Image" (click)="scaleImage(0)">
                 <input *ngIf="imgDeminsions.x && imgDeminsions.y"
                         title="Save Image" type="button" (click)="saveImage('file')" value="💽">
@@ -31,19 +31,19 @@
             <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
                     id="canvasImage">
             </canvas>
-            <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
-                    id="canvasRectangle">
+            <canvas id="canvasRectangle">
             </canvas>
-            <canvas id="scaledCanvas" [width]="scaleDeminsions.x" [height]="scaleDeminsions.y">
+            <canvas id="scaledCanvas">
             </canvas>
         </div>
-        <div *ngIf="imageToShow" class="workspace">
-            <img [src]="imageToShow" class="editedImage"
-                 alt="Altered image">
-                 <br/>
+        <div *ngIf="imageToShow" class="workspace contols">
+            <div class="floatWrapper">
+                <img [src]="imageToShow" class="editedImage"
+                    alt="Altered image">
+                    <br/>
 
-            <button (click)="saveImage('edit')">💽</button>
-
+                <button (click)="saveImage('edit')" title="Save Image">💽</button>
+            </div>
         </div>
 
     </div>
