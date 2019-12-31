@@ -23,7 +23,7 @@ export class WelcomeComponent implements OnInit {
   // #region Members
   imgUrl: string;
   @Input()
-  webUrl = 'assets/img/hills.jpg';
+  webUrl = 'assets/img/hill.jpg';
   imgFile: any;
   imgMime = '';
   imgFail = false;
