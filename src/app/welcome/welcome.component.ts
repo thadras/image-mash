@@ -62,9 +62,9 @@ export class WelcomeComponent implements OnInit {
     this.receivedClick = true;
     const rect = this.imgCanvas.getBoundingClientRect();
 
-    // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
-    this.startPosition.x = this.stopPosition.x = parseInt(event.clientX.toString(), 10) - parseInt(rect.left.toString(), 10);
-    this.startPosition.y = this.stopPosition.y = parseInt(event.clientY.toString(), 10) - parseInt(rect.top.toString(), 10);
+    // Math.floor calls to ensure starting at a pixel to avoid rectangle in cropped image
+    this.startPosition.x = this.stopPosition.x = Math.floor(event.clientX) - Math.floor(rect.left);
+    this.startPosition.y = this.stopPosition.y = Math.floor(event.clientY) - Math.floor(rect.top);
 
     if (!this.rectCanvas) {
       this.rectCanvas = document.getElementById('canvasImage') as HTMLCanvasElement;
@@ -85,9 +85,9 @@ export class WelcomeComponent implements OnInit {
 
     const scroll = this.scrollOffset();
     const rect = this.imgCanvas.getBoundingClientRect();
-    // ParseInt calls to ensure starting at a pixel to avoid rectangle in cropped image
-    this.stopPosition.x = parseInt(event.clientX.toString(), 10) - parseInt(rect.left.toString(), 10);
-    this.stopPosition.y = parseInt(event.clientY.toString(), 10) - parseInt(rect.top.toString(), 10);
+    // Math.floor calls to ensure starting at a pixel to avoid rectangle in cropped image
+    this.stopPosition.x = Math.floor(event.clientX) - Math.floor(rect.left);
+    this.stopPosition.y = Math.floor(event.clientY) - Math.floor(rect.top);
 
     this.resetCanvas();
     this.rectContext.beginPath();
