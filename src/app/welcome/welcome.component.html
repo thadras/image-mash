@@ -1,13 +1,34 @@
 <div class="body">
+    <h1>Image Mash!</h1>
+    <p> View this Angular application's <a href="https://github.com/thadras/image-mash">source code</a> or mash it up on <a href="https://stackblitz.com/github/thadras/image-mash">StackBlitz</a></p>
     <p *ngIf="webUrl !== '' && imgFail">
-         Failed to load image {{webUrl}}since bad URL or CORS is not supported
+         Failed to load image {{webUrl}} due to bad URL or CORS is not supported by the server
     </p>
     <ul *ngIf="largeImage()">
     	When Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
         <li *ngIf="imgUrl && imgUrl.length">The loaded image URI size is {{imgUrl.length/(1024*1024) | number}} MB</li>
         <li *ngIf="imageToShow && imageToShow.length">The edited image URI size is {{imageToShow.length /(1024*1024)| number}} MB</li>
     </ul>
+    <div class="button-bar">
+        <div>
 
+            <label for="userFile">
+		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
+                &nbsp;Select an image file to resize (➖/➕) or crop (by making selection & 📸) then save (💽) or clear (💨) :)
+                <input type="file" id="userFile" (change)="readImageFromUser($event)"
+                    [ngModel]="imgFile" accept="image/*" #file>
+            </label>
+            <br/>
+
+            <label for="webUrl">
+                Or use URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
+                <br/>
+                <input type="text" placeholder="Enter a URL of an image" [(ngModel)]="webUrl" name="webUrl">
+            </label>
+
+            <button type="button" (click)="getImageFromService()">Get Image</button>
+            </div>
+    </div>
     <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
@@ -48,24 +69,5 @@
 
     </div>
     <br/>
-    <div class="button-bar">
-        <div>
-
-            <label for="userFile">
-		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
-                &nbsp;Select an image file to resize (➖/➕) or crop (by making selection & 📸) then save (💽) or clear (💨) :)
-                <input type="file" id="userFile" (change)="readImageFromUser($event)"
-                    [ngModel]="imgFile" accept="image/*" #file>
-            </label>
-            <br/>
-
-            <label for="webUrl">
-                Or use URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
-                <br/>
-                <input type="text" placeholder="Enter a URL of an image" [(ngModel)]="webUrl" name="webUrl">
-            </label>
-
-            <button type="button" (click)="getImageFromService()">Get Image</button>
-            </div>
-    </div>
+    
 </div>

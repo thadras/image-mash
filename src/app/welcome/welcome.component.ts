@@ -54,11 +54,11 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit() {
     /* Suppose the onInit method is not necessary when no default asset file is being
-     * loaded, but leaving it.  As it's only commented out since the URL won't load on
-     * on StackBlitz, so no point in loading it there with an error message;
-     * this.webUrl = 'assets/img/hill.jpg'; 
-     * this.getImageFromService();
+     * loaded, but leaving it.  As it was only commented out since the URL won't load on
+     * on StackBlitz, so when  unable to load it, there is an error message.
      */
+     this.webUrl = './assets/img/hill.jpg'; 
+     this.getImageFromService();
   }
 
   //#region Image selection and reseting

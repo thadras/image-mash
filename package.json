@@ -1,6 +1,7 @@
 {
   "name": "image-mash",
   "version": "0.0.0",
+  "homepage": "https://thadras.github.io/image-mash", 
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
