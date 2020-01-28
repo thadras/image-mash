@@ -27,15 +27,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    touch-action: pan-x pan-y !important;
+
 }
 #canvasImage {
     z-index: 0;
 }
 
-#canvasRectangle {
-    z-index: 1;
-    display: none;
-}
 #scaledCanvas, #userFile{
     display: none;
 }
@@ -59,10 +57,10 @@ position: sticky;
 
 }
 input[type =
-"button"] .fileButton{
-    padding: 6px;
-    width: 34px;
-    margin: 0px 0px 8px 0px;
+"button"], .fileButton{
+    padding: 12px;
+    width: 48px;
+    margin: 0px 0px 16px 0px;
     column-count: 3;
     column-gap: 20px;
 }

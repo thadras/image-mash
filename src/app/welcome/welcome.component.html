@@ -1,12 +1,11 @@
 <div class="body">
-    <h1>Image Mash!</h1>
-    <p> View this Angular application's <a href="https://github.com/thadras/image-mash">source code</a> or mash it up on <a href="https://stackblitz.com/github/thadras/image-mash">StackBlitz</a></p>
+    <h3>Image Mash!</h3>
     <p *ngIf="webUrl !== '' && imgFail">
          Failed to load image {{webUrl}} due to bad URL or CORS is not supported by the server
     </p>
     <ul *ngIf="largeImage()">
-    	When Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
-        <li *ngIf="imgUrl && imgUrl.length">The loaded image URI size is {{imgUrl.length/(1024*1024) | number}} MB</li>
+    	If Download Failed with Netwrok Error, then the browser has refused to save the image since the Data URI is too long.
+        <li *ngIf="imgDataURI && imgDataURI.length">The loaded image URI size is {{imgDataURI.length/(1024*1024) | number}} MB</li>
         <li *ngIf="imageToShow && imageToShow.length">The edited image URI size is {{imageToShow.length /(1024*1024)| number}} MB</li>
     </ul>
     <div class="button-bar">
@@ -14,29 +13,32 @@
 
             <label for="userFile">
 		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
-                &nbsp;Select an image file to resize (➖/➕) or crop (by making selection & 📸) then save (💽) or clear (💨) :)
+                &nbsp;Choose an image file to resize (➖/➕) or make a selection to crop (📸) then save (💽) or clear (💨)  Output is to the right.
                 <input type="file" id="userFile" (change)="readImageFromUser($event)"
                     [ngModel]="imgFile" accept="image/*" #file>
             </label>
             <br/>
 
             <label for="webUrl">
-                Or use URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
+                Or enter URL of an Image hosted on a server supporting cross-orgin requests (e.g. imgur)
                 <br/>
                 <input type="text" placeholder="Enter a URL of an image" [(ngModel)]="webUrl" name="webUrl">
             </label>
 
             <button type="button" (click)="getImageFromService()">Get Image</button>
-            </div>
+            <p>Users w/ touch can brief-tap on image to reset scroll</p>
+        
+        </div>
+        
     </div>
     <div class="workspace-wrapper"> 
      
         <div  class="workspace controls">
             <div  *ngIf="image" class="floatWrapper">
                 <input type="button" id="plus" value="➕" 
-                        title="Enlarge Image" (click)="scaleImage(1)">
+                        title="Enlarge Image" (click)="enlarge()">
                 <input type="button" id="minus" value="➖" 
-                        title="Shrink Image" (click)="scaleImage(0)">
+                        title="Shrink Image" (click)="shrink()">
                 <input *ngIf="imgDeminsions.x && imgDeminsions.y"
                         title="Save Image" type="button" (click)="saveImage('file')" value="💽">
                 <input *ngIf="imgDeminsions.x && imgDeminsions.y"
@@ -46,13 +48,14 @@
 		        <button class="fileButton" title="Select File" (click)="file.click()">📂</button>
             </div>
         </div>
-        
+
         <div class="workspace controls" (mousemove)="moving($event)" (mouseout)="endDrag($event)"
-	     (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)">
-            <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
-                    id="canvasImage">
-            </canvas>
-            <canvas id="canvasRectangle">
+	     (mousedown)="beginDrag($event)" (mouseup)="endDrag($event)"
+         (panstart)="onPanStart($event)" (panmove)="onPanMove($event)"
+         (panend)="onPanEnd($event)" (pancancel)="onPanEnd($event)">
+	     <canvas [height]="imgDeminsions.y" [width]="imgDeminsions.x"
+                 id="canvasImage"
+                 (tap)="onTapped($event)">
             </canvas>
             <canvas id="scaledCanvas">
             </canvas>
@@ -68,6 +71,7 @@
         </div>
 
     </div>
-    <br/>
-    
+
+    <p> View this Angular application's <a href="https://github.com/thadras/image-mash">source code</a> or mash it up on <a href="https://stackblitz.com/github/thadras/image-mash">StackBlitz</a></p>
+
 </div>
