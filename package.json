@@ -1,11 +1,11 @@
 {
   "name": "image-mash",
   "version": "0.0.0",
-  "homepage": "https://thadras.github.io/image-mash",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
     "build": "ng build",
+    "prod": "ng build --prod --base-href https://thadras.github.io/image-mash/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
